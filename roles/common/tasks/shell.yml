@@ -1,0 +1,42 @@
+---
+- name: install packages
+  become: true
+  apt: name="{{item}}" state=latest
+  with_items:
+    - zsh
+    - git
+  register: installation
+
+- name: Backing up existing ~/.zshrc
+  shell: if [ -f ~/.zshrc ]; then mv ~/.zshrc{,.orig}; fi
+  when: installation|success
+  sudo: no
+
+- name: Cloning oh-my-zsh
+  git:
+    repo=https://github.com/robbyrussell/oh-my-zsh
+    dest=~/.oh-my-zsh
+  when: installation|success
+  register: cloning
+  sudo: no
+
+- name: Cloning base16-shell
+  git:
+    repo=https://github.com/chriskempson/base16-shell.git
+    dest=~/.config/base16-shell
+  when: installation|success
+  register: cloningbase16
+  sudo: no
+
+- name: Creating new ~/.zshrc
+  copy:
+    src=~/.oh-my-zsh/templates/zshrc.zsh-template
+    dest=~/.zshrc
+  when: cloning|success
+  sudo: no
+
+- shell: 'which zsh'
+  register: zsh_path
+
+- name: change shell to zsh
+  user: name={{ user }} shell={{ zsh_path.stdout }}

@@ -1,41 +1,6 @@
 ---
-
-- name: get the username running the deploy
-  local_action: command whoami
-  register: username_on_the_host
-
-- name: install packages
-  become: true
-  apt: name="{{item}}" state=present
-  with_items:
-    - curl
-    - make
-    - vim
-
-- name: Install ssh keys
-  copy:
-    src: "ssh/{{ item }}"
-    mode: "0644"
-    dest: ~/.ssh/
-  with_items:
-    - id_rsa
-    - id_rsa.pub
-    - known_hosts
-
-- name: Install ssh config
-  copy:
-    src: "ssh/config"
-    mode: "0644"
-    dest: ~/.ssh/
-
-- name: Download dot files from github
-  git: repo=ssh://git@github.com/odolbeau/dot-files.git dest=~/dot-files
-
-- name: Install dot files
-  command: make -C ~/dot-files install
-
-- name: Download VIM configuration from github
-  git: repo=ssh://git@github.com/odolbeau/vim-config.git dest=~/vim-config
-
-- name: Install VIM configuration
-  command: make -C ~/vim-config install
+- include: common_packages.yml
+- include: ssh_keys.yml
+- include: shell.yml
+- include: vim.yml
+- include: razer_laptop.yml
