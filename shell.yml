@@ -8,7 +8,7 @@
   register: installation
 
 - name: Backing up existing ~/.zshrc
-  shell: if [ -f ~/.zshrc ]; then mv ~/.zshrc{,.orig}; fi
+  shell: if [ -f ~/.zshrc ]; then mv ~/.zshrc ~/.zshrc.orig; fi
   when: installation|success
   sudo: no
 
@@ -38,5 +38,10 @@
 - shell: 'which zsh'
   register: zsh_path
 
+- name: get the username running the deploy
+  local_action: command whoami
+  register: username_on_host
+
 - name: change shell to zsh
-  user: name={{ user }} shell={{ zsh_path.stdout }}
+  user: name={{username_on_host.stdout}} shell={{zsh_path.stdout}}
+  sudo: yes

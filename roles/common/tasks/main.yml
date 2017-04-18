@@ -1,6 +1,6 @@
 ---
 - include: common_packages.yml
-- include: ssh_keys.yml
+- include: ssh_config.yml
 - include: shell.yml
 - include: vim.yml
 - include: razer_laptop.yml
